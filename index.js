@@ -3,7 +3,8 @@ const { Client, GatewayIntentBits } = require("discord.js");
 const minimist = require("minimist");
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
+  allowedMentions: { repliedUser: false }
 });
 
 client.on("ready", () => console.log(`Logged in as ${client.user.tag}`));
@@ -21,7 +22,7 @@ client.on("messageCreate", async (message) => {
   channel.send({
     content: original.content,
     embeds: original.embeds,
-    allowedMentions: { parse: [""] },
+    allowedMentions: { parse: [] },
     files: [...message.attachments.values()]
   })
   .then(() => {
@@ -31,7 +32,7 @@ client.on("messageCreate", async (message) => {
       .catch(() => message.reply("消せなかったわ"))
     } else message.reply("Redirected!")
   })
-  .catch(() => message.reply("メッセージ送れなかったわ"));
+  .catch((e) => {console.error(e);message.reply("メッセージ送れなかったわ")});
 });
 
 process.on("uncaughtException", console.error);
