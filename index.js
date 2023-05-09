@@ -1,9 +1,9 @@
 require("dotenv").config();
-const { Client, GatewayIntentBits } = require("discord.js");
+const { Client, GatewayIntentBits, PermissionsBitField } = require("discord.js");
 const minimist = require("minimist");
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers],
   allowedMentions: { repliedUser: false }
 });
 
@@ -19,6 +19,7 @@ client.on("messageCreate", async (message) => {
   if (!originalId) return message.reply("返信で元メッセージを指定しろボケ");
   const original = await message.channel.messages.fetch(originalId);
   const del = minimist(message.content.split(" ")).d;
+  if (del && !message.member.permissionsIn(message.channel).has(PermissionsBitField.Flags.ManageMessages)) return message.reply("お前消せる権限ないよね")
   channel.send({
     content: original.content,
     embeds: original.embeds,
